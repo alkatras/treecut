@@ -10,9 +10,9 @@ object ShowCase extends App {
 
   for (t <- generator.trees.filter(_.size > 100).take(10)) {
     val cutTree = new CutTree(t)
-    cutTree.sortCut(100)
-    println(s"Before: weight  ${t.fullWeight},size ${t.size}, tree  ${t} ")
-    println(s"After: weight  ${cutTree.root.fullWeight}, size ${cutTree.root.size},tree  ${cutTree.root}")
+    val stats = cutTree.sortCut(100)
+    println(s"Before: weight  ${stats.initialWeight},size ${t.size}, tree  ${t} ")
+    println(s"After: weight  ${stats.newWeight}, size ${cutTree.root.size}, removed ${stats.removals}, tree  ${cutTree.root}")
     println("--------------------------------------------------------------")
   }
 

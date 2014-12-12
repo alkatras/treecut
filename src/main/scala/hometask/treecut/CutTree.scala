@@ -59,12 +59,11 @@ class CutTree(var root: Node) {
     }
 
     val initialWeight = root.fullWeight
-    val (newWeight, actions) = getNodeWeightAndCutActions(root)
-    val selectedActions = actions.sorted(Ordering.by[CutAction, Int] { case (n, w) => w}.reverse).take(maxCuts)
+    val (_, actions) = getNodeWeightAndCutActions(root)
+    val selectedActions = actions.sortBy{ case (n, w) => w}.take(maxCuts)
     for ((n, _) <- selectedActions) {
       removeSubtree(n)
     }
-    CutStats(initialWeight, newWeight, selectedActions.length)
+    CutStats(initialWeight, root.fullWeight, selectedActions.length)
   }
 }
-

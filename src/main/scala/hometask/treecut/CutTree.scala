@@ -57,20 +57,16 @@ class CutTree(var root: Node) {
         else (nr, rw) :: merge(left, rs)
     }
 
-    def insert(actions: CutActions, c: CutAction): CutActions = (actions, c) match {
-      case (Nil, _) => List(c)
-      case ((an, aw) :: cs, (n, w)) =>
-        if (w < aw) List((n, w))
-        else (an, aw) :: insert(cs, (n, w - aw))
-    }
-
-    val (actions, initialWeight) = root.fold2[(CutActions, Int)]((Nil, 0)) {
+    val empty = (Nil, 0)
+    val (actions, initialWeight) = if (maxCuts == 0) empty
+    else root.fold2[(CutActions, Int)](empty) {
       case ((lca, lw), (rca, rw), n) =>
         val subtreeWeight = n.weight + lw + rw
-        val m = merge(lca, rca) take maxCuts
-        if (m.foldLeft(subtreeWeight) { case (acc, (_, w)) => acc - w} < 0 && subtreeWeight < 0)
-          (insert(m, (n, subtreeWeight)), subtreeWeight)
-        else (m, subtreeWeight)
+        val childActions = merge(lca, rca) take maxCuts
+        val childActionsWeight = childActions.foldLeft(0) { case (acc, (_, w)) => acc + w}
+        if (subtreeWeight < 0 && subtreeWeight < childActionsWeight)
+          (List((n, subtreeWeight)), subtreeWeight)
+        else (childActions, subtreeWeight)
     }
 
     for ((n, _) <- actions) {

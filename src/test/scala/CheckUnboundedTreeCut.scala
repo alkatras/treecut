@@ -4,13 +4,13 @@ import org.scalatest.{Matchers, PropSpec}
 import scala.util.Random
 
 
-class CutTreeTest extends PropSpec with PropertyChecks with Matchers {
+class CheckUnboundedTreeCut extends PropSpec with PropertyChecks with Matchers {
 
-  //  implicit override val generatorDrivenConfig =
-  //    PropertyCheckConfig(minSize = 10, maxSize = 20)
+//    implicit override val generatorDrivenConfig =
+//      PropertyCheckConfig(minSize = 1000, maxSize = 2000)
 
   val generators = new Generators(
-    maxNodes = 40,
+    maxNodes = 80,
     weightMin = -1000,
     weightMax = 1000
   )

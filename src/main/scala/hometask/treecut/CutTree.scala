@@ -38,6 +38,7 @@ case class NonEmptyNode(id: Int, weight: Int, left: Node, right: Node) extends N
   def isEmpty = false
 }
 
+
 class CutTree(var root: Node) {
 
   case class CutStats(initialWeight: Int, newWeight: Int, removals: Int)
@@ -48,23 +49,33 @@ class CutTree(var root: Node) {
     type CutAction = (Node, Int)
     type CutActions = List[CutAction]
 
-    def getNodeWeightAndCutActions(n: Node): (Int, CutActions) = n match {
-      case EmptyNode => (0, Nil)
-      case NonEmptyNode(_, w, l, r) =>
-        val (lw, leftWeights) = getNodeWeightAndCutActions(l)
-        val (rw, rightWeights) = getNodeWeightAndCutActions(r)
-        val newWeight = w + lw + rw
-        if (newWeight < 0) (0, List((n, newWeight)))
-        else (newWeight, leftWeights ++ rightWeights)
+    def merge(left: CutActions, right: CutActions): CutActions = (left, right) match {
+      case (Nil, _) => right
+      case (_, Nil) => left
+      case ((nl, lw) :: ls, (nr, rw) :: rs) =>
+        if (lw < rw) (nl, lw) :: merge(ls, right)
+        else (nr, rw) :: merge(left, rs)
     }
 
-    val initialWeight = root.fullWeight
-    val (newWeight, actions) = getNodeWeightAndCutActions(root)
-    val selectedActions = actions.sorted(Ordering.by[CutAction, Int] { case (n, w) => w}.reverse).take(maxCuts)
-    for ((n, _) <- selectedActions) {
+    def insert(actions: CutActions, c: CutAction): CutActions = (actions, c) match {
+      case (Nil, _) => List(c)
+      case ((an, aw) :: cs, (n, w)) =>
+        if (w < aw) List((n, w))
+        else (an, aw) :: insert(cs, (n, w - aw))
+    }
+
+    val (actions, initialWeight) = root.fold2[(CutActions, Int)]((Nil, 0)) {
+      case ((lca, lw), (rca, rw), n) =>
+        val subtreeWeight = n.weight + lw + rw
+        val m = merge(lca, rca) take maxCuts
+        if (m.foldLeft(subtreeWeight) { case (acc, (_, w)) => acc - w} < 0 && subtreeWeight < 0)
+          (insert(m, (n, subtreeWeight)), subtreeWeight)
+        else (m, subtreeWeight)
+    }
+
+    for ((n, _) <- actions) {
       removeSubtree(n)
     }
-    CutStats(initialWeight, newWeight, selectedActions.length)
+    CutStats(initialWeight, root.fullWeight, actions.length)
   }
 }
-

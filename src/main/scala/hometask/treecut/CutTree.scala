@@ -67,7 +67,7 @@ class CutTree(var root: Node) {
         val subtreeWeight = n.weight + lw + rw
         val childActions = merge(lca, rca) take maxCuts
         val childActionsWeight = childActions.foldLeft(0) { case (acc, (_, w)) => acc + w}
-        if (subtreeWeight < 0 && subtreeWeight < childActionsWeight)
+        if (subtreeWeight < childActionsWeight)
           (List((n, subtreeWeight)), subtreeWeight)
         else (childActions, subtreeWeight)
     }

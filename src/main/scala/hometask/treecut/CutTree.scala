@@ -1,56 +1,39 @@
 package hometask.treecut
 
+case class Node(id: Int, weight: Int, left: Option[Node], right: Option[Node]) {
+  def removeDescendant(n: Node): Node = {
+    def removeFromSubtree(sn: Option[Node]): Option[Node] = sn.filterNot(_.id == n.id).map(_.removeDescendant(n))
+    this.copy(left = removeFromSubtree(left), right = removeFromSubtree(right))
+  }
 
-sealed trait Node {
-  val id: Int
-  val weight: Int
-
-  def isEmpty: Boolean
-
-  def removeNode(n: Node): Node
+  def fold2[B](z: B)(f: (B, B, Node) => B): B = {
+    def foldOnBranch(br: Option[Node]) = br.map(_.fold2(z)(f)).getOrElse(z)
+    f(foldOnBranch(left), foldOnBranch(right), this)
+  }
 
   def size: Int = fold2(0)((s1, s2, _) => s1 + s2 + 1)
 
   def fullWeight: Int = fold2(0)((w1, w2, cw) => w1 + w2 + cw.weight)
-
-  def fold2[B](z: B)(f: (B, B, Node) => B): B
-}
-
-case object EmptyNode extends Node {
-  val id: Int = 0
-  val weight: Int = 0
-
-  def removeNode(n: Node): Node = EmptyNode
-
-  def fold2[B](z: B)(f: (B, B, Node) => B): B = z
-
-  def isEmpty = true
-
-}
-
-case class NonEmptyNode(id: Int, weight: Int, left: Node, right: Node) extends Node {
-  def removeNode(n: Node): Node = if (n.isEmpty) n
-  else if (n.id == id) EmptyNode
-  else this.copy(left = left.removeNode(n), right = right.removeNode(n))
-
-  def fold2[B](z: B)(f: (B, B, Node) => B): B = f(left.fold2(z)(f), right.fold2(z)(f), this)
-
-  def isEmpty = false
 }
 
 object LeafNode {
-  def apply(id: Int, weight: Int) = NonEmptyNode(id, weight, EmptyNode, EmptyNode)
+  def apply(id: Int, weight: Int) = Node(id, weight, None, None)
 }
 
 class CutTree(var root: Node) {
 
   case class CutStats(initialWeight: Int, newWeight: Int, removals: Int)
 
-  def removeSubtree(n: Node): Unit = root = root.removeNode(n)
+  def removeSubtree(n: Node): Unit = root = root.removeDescendant(n)
 
+  //*************************************************************************
+  //  Algorithm based on modified merge sort
+  //  Run time properties:
+  //  Worst case - nlog(n), example: tree where we must remove all leafs
+  //  best case - n, example: tree with all positive weighted nodes
+  //************************************************************************
   def sortCut(maxCuts: Int): CutStats = {
-    type CutAction = (Node, Int)
-    type CutActions = List[CutAction]
+    type CutActions = List[(Node, Int)]
 
     def merge(left: CutActions, right: CutActions): CutActions = (left, right) match {
       case (Nil, _) => right
@@ -67,7 +50,7 @@ class CutTree(var root: Node) {
         val subtreeWeight = n.weight + lw + rw
         val childActions = merge(lca, rca) take maxCuts
         val childActionsWeight = childActions.foldLeft(0) { case (acc, (_, w)) => acc + w}
-        if (subtreeWeight < childActionsWeight)
+        if (subtreeWeight < childActionsWeight && n.id != root.id)
           (List((n, subtreeWeight)), subtreeWeight)
         else (childActions, subtreeWeight)
     }

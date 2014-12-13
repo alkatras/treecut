@@ -4,16 +4,9 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class TreeGeneratorSpec extends FlatSpec with Matchers {
 
-  "Generated tree" should "be empty if max nodes = 0" in {
-    TreeGenerator(0, -100, 100).trees.head.isEmpty should be(true)
-  }
 
-  "Generated tree" should "be empty if weightMin greater than weightMax" in {
-    TreeGenerator(0, 100, -100).trees.head.isEmpty should be(true)
-  }
-
-  "Generated trees" should "at least one non empty" in {
-    getSmallTrees.exists(!_.isEmpty) should be(true)
+  "Generated trees" should "contain at least two different trees" in {
+    getSmallTrees.distinct.size >= 2 should be(true)
   }
 
   "Generated trees" should "not contain tree bigger than 10" in {

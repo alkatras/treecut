@@ -6,8 +6,8 @@ import scala.util.Random
 
 class CheckUnboundedTreeCut extends PropSpec with PropertyChecks with Matchers {
 
-//    implicit override val generatorDrivenConfig =
-//      PropertyCheckConfig(minSize = 1000, maxSize = 2000)
+  //    implicit override val generatorDrivenConfig =
+  //      PropertyCheckConfig(minSize = 1000, maxSize = 2000)
 
   val generators = new Generators(
     maxNodes = 80,
@@ -20,10 +20,10 @@ class CheckUnboundedTreeCut extends PropSpec with PropertyChecks with Matchers {
   property("maximum sortCut should return max weighted subtree") {
     forAll {
       t: CutTree =>
-        val initial = t.root
+        val initial = Some(t.root)
         t.sortCut(maxNodes)
         val newWeight = t.root.fullWeight
-        val maxWeight = getAllSubtrees(initial).maxBy(_.fullWeight).fullWeight
+        val maxWeight = getAllSubtrees(initial).filterNot(_.isEmpty).maxBy(_.get.fullWeight).get.fullWeight
         newWeight should equal(maxWeight)
     }
   }
@@ -32,27 +32,25 @@ class CheckUnboundedTreeCut extends PropSpec with PropertyChecks with Matchers {
     val rnd = Random
     forAll {
       t: CutTree =>
-        if (!t.root.isEmpty) {
-          val initial = t.root
-          def find(id: Int) = t.root.fold2[Option[Node]](None)((l, r, n) => l.orElse(r).orElse(if (n.id == id) Some(n) else None))
-          val id = 1 + rnd.nextInt(t.root.size)
-          val node = find(id)
-          t.removeSubtree(node.get)
-          find(id).isEmpty should equal(true)
-          (initial.fullWeight - t.root.fullWeight) should equal(node.get.fullWeight)
-        }
+        val initial = t.root
+        def find(id: Int) = t.root.fold2[Option[Node]](None)((l, r, n) => l.orElse(r).orElse(if (n.id == id) Some(n) else None))
+        val id = 2 + rnd.nextInt(t.root.size - 1)
+        val node = find(id)
+        t.removeSubtree(node.get)
+        find(id).isEmpty should equal(true)
+        (initial.fullWeight - t.root.fullWeight) should equal(node.get.fullWeight)
     }
   }
 
 
-  def getAllSubtrees(tree: Node): List[Node] = tree match {
-    case EmptyNode => List(EmptyNode)
-    case n@NonEmptyNode(_, w, l, r) =>
+  def getAllSubtrees(tree: Option[Node]): List[Option[Node]] = tree match {
+    case None => List(None)
+    case Some(n@Node(_, _, l, r)) =>
       val allSubtrees = for {ls <- getAllSubtrees(l)
                              rs <- getAllSubtrees(r)
                              if !ls.isEmpty || !rs.isEmpty
-      } yield n.copy(left = ls, right = rs)
-      EmptyNode :: n.copy(left = EmptyNode, right = EmptyNode) :: allSubtrees
+      } yield Some(n.copy(left = ls, right = rs))
+      None :: Some(n.copy(left = None, right = None)) :: allSubtrees
   }
 
 }

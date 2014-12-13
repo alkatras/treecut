@@ -26,12 +26,16 @@ class CutTree(var root: Node) {
 
   def removeSubtree(n: Node): Unit = root = root.removeDescendant(n)
 
-  //*************************************************************************
-  //  Algorithm based on modified merge sort
-  //  Run time properties:
+  //*****************************************************************************
+  //  Algorithm based on modified merge sort.
+  //  Run time properties.
+  //  For find all remove actions:
   //  Worst case - nlog(n), example: tree where we must remove all leafs
   //  best case - n, example: tree with all positive weighted nodes
-  //************************************************************************
+  //  removeDescendant: has linear time cost in the Node immutable data structure
+  //  (may be reduced to constant in mutable)
+  //  hence overall sortCut time is about n^2 in the worst case
+  //*****************************************************************************
   def sortCut(maxCuts: Int): CutStats = {
     type CutActions = List[(Node, Int)]
 

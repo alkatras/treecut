@@ -38,6 +38,9 @@ case class NonEmptyNode(id: Int, weight: Int, left: Node, right: Node) extends N
   def isEmpty = false
 }
 
+object LeafNode {
+  def apply(id: Int, weight: Int) = NonEmptyNode(id, weight, EmptyNode, EmptyNode)
+}
 
 class CutTree(var root: Node) {
 

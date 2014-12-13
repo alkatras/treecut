@@ -1,7 +1,13 @@
 import hometask.treecut.{CutTree, EmptyNode, NonEmptyNode}
+<<<<<<< HEAD
 import org.scalatest.{Matchers, FlatSpec}
 
 class CheckAlgorithmFlaw extends FlatSpec with Matchers {
+=======
+import org.scalatest.FlatSpec
+
+class CheckAlgorithmFlaw extends FlatSpec{
+>>>>>>> 2cc893ec3375bb29fe3ebab6032974002d87a73b
 
   /*
            10(1)
@@ -9,10 +15,17 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
        -100(2)  -20(3)
       /    \
     75(5) -200(4)
+<<<<<<< HEAD
   */
 
 
   "Total weight" should "be 0 after first cut" in {
+=======
+
+  */
+
+  "Total wight" should "be -10 after first cut" in {
+>>>>>>> 2cc893ec3375bb29fe3ebab6032974002d87a73b
 
     val node5 = new NonEmptyNode(5, 75, EmptyNode, EmptyNode)
     val node4 = new NonEmptyNode(4, -100, EmptyNode, EmptyNode)
@@ -22,9 +35,15 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
 
     val rs = new CutTree(node1).sortCut(1)
 
+<<<<<<< HEAD
     rs.newWeight should be(0)
   }
 
+=======
+    assert(rs.newWeight == -10)
+
+  }
+>>>>>>> 2cc893ec3375bb29fe3ebab6032974002d87a73b
   /*
            10(1)
           /    \
@@ -33,7 +52,11 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
     75(5) -200(4) -20(6)
   */
 
+<<<<<<< HEAD
   "Total weight" should "be 184 after first cut" in {
+=======
+  "Total wight" should "be 184 after first cut" in {
+>>>>>>> 2cc893ec3375bb29fe3ebab6032974002d87a73b
 
     val node6 = new NonEmptyNode(6, -20, EmptyNode, EmptyNode)
     val node5 = new NonEmptyNode(5, 75, EmptyNode, EmptyNode)
@@ -44,6 +67,7 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
 
     val rs = new CutTree(node1).sortCut(1)
 
+<<<<<<< HEAD
     rs.newWeight should be(164)
   }
 
@@ -157,3 +181,9 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
 
 
 }
+=======
+    assert(rs.newWeight == 164)
+  }
+
+}
+>>>>>>> 2cc893ec3375bb29fe3ebab6032974002d87a73b

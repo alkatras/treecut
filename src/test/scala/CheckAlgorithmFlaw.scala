@@ -20,7 +20,7 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
     val node2 = Node(2, -200, Some(node5), Some(node4))
     val node1 = Node(1, 10, Some(node2), Some(node3))
 
-    val rs = new CutTree(node1).sortCut(1)
+    val rs = new CutTree(node1).cut(1)
 
     rs.newWeight should be(-10)
   }
@@ -42,7 +42,7 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
     val node2 = Node(2, -1, Some(node5), Some(node4))
     val node1 = Node(1, 10, Some(node2), Some(node3))
 
-    val rs = new CutTree(node1).sortCut(1)
+    val rs = new CutTree(node1).cut(1)
 
     rs.newWeight should be(164)
   }
@@ -65,7 +65,7 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
     val node2 = Node(2, -1, Some(node5), Some(node4))
     val node1 = Node(1, 10, Some(node2), Some(node3))
 
-    val rs = new CutTree(node1).sortCut(1)
+    val rs = new CutTree(node1).cut(1)
 
     rs.newWeight should be(90)
   }
@@ -87,7 +87,7 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
     val node2 = Node(2, -1, Some(node5), Some(node4))
     val node1 = Node(1, 10, Some(node2), Some(node3))
 
-    val rs = new CutTree(node1).sortCut(2)
+    val rs = new CutTree(node1).cut(2)
 
     rs.newWeight should be(110)
   }
@@ -106,7 +106,7 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
     val node2 = Node(2, 6, Some(node3), None)
     val node1 = Node(1, -5, Some(node2), None)
 
-    val rs = new CutTree(node1).sortCut(2)
+    val rs = new CutTree(node1).cut(2)
 
     rs.newWeight should be(1)
   }
@@ -134,7 +134,7 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
     val node2 = Node(2, 3, Some(node3), None)
     val node1 = Node(1, -5, Some(node2), None)
 
-    val rs = new CutTree(node1).sortCut(2)
+    val rs = new CutTree(node1).cut(2)
 
     rs.newWeight should be(1)
   }
@@ -155,7 +155,7 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
     val node2 = Node(2, 1, Some(node3), Some(node4))
     val node1 = Node(1, 5, Some(node2), None)
 
-    val rs = new CutTree(node1).sortCut(1)
+    val rs = new CutTree(node1).cut(1)
 
     rs.newWeight should be(5)
   }
@@ -168,7 +168,7 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
 
     val node = LeafNode(1, -5)
 
-    val rs = new CutTree(node).sortCut(0)
+    val rs = new CutTree(node).cut(0)
 
     rs.newWeight should be(-5)
   }
@@ -192,7 +192,7 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
     val node3 = Node(3, 1,Some(node8), Some(node7))
     val node1 = Node(3, 1,Some(node2), Some(node3))
 
-    val rs = new CutTree(node1).sortCut(2)
+    val rs = new CutTree(node1).cut(2)
 
     rs.newWeight should be(1)
   }

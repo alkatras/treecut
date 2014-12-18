@@ -17,11 +17,11 @@ class CheckUnboundedTreeCut extends PropSpec with PropertyChecks with Matchers {
 
   import generators._
 
-  property("maximum sortCut should return max weighted subtree") {
+  property("maximum cut should return max weighted subtree") {
     forAll {
       t: CutTree =>
         val initial = Some(t.root)
-        t.sortCut(maxNodes)
+        t.cut(maxNodes)
         val newWeight = t.root.fullWeight
         val maxWeight = getAllSubtrees(initial).filterNot(_.isEmpty).maxBy(_.get.fullWeight).get.fullWeight
         newWeight should equal(maxWeight)

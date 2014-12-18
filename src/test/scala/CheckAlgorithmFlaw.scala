@@ -12,7 +12,7 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
   */
 
 
-  "Total weight" should "be -10 after first cut" in {
+  "(test1) Total weight" should "be -10 after first cut" in {
 
     val node5 = LeafNode(5, 75)
     val node4 = LeafNode(4, -100)
@@ -33,7 +33,7 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
     75(5) -200(4) -20(6)
   */
 
-  "Total weight" should "be 164 after first cut" in {
+  "(test2) Total weight" should "be 164 after first cut" in {
 
     val node6 = LeafNode(6, -20)
     val node5 = LeafNode(5, 75)
@@ -53,10 +53,10 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
         /    \
      -1(2)  100(3)
     /    \      \
- -75(5) -200(4) -20(6)
+-75(5) -200(4) -20(6)
   */
 
-  "Total weight" should "be 90 after first cut" in {
+  "(test3) Total weight" should "be 90 after first cut" in {
 
     val node6 = LeafNode(6, -20)
     val node5 = LeafNode(5, -75)
@@ -78,7 +78,7 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
    -75(5) -200(4) -20(6)
   */
 
-  "Total weight" should "be 110 after second cut" in {
+  "(test4) Total weight" should "be 110 after second cut" in {
 
     val node6 = LeafNode(6, -20)
     val node5 = LeafNode(5, -75)
@@ -100,7 +100,7 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
          -2(3)
   */
 
-  "Total weight" should "be 1 after second cut" in {
+  "(test5) Total weight" should "be 1 after second cut" in {
 
     val node3 = LeafNode(3, -2)
     val node2 = Node(2, 6, Some(node3), None)
@@ -124,7 +124,7 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
       -8(6)
   */
 
-  "Total weight" should "be 2 after third cut" in {
+  "(test6) Total weight" should "be 2 after third cut" in {
 
 
     val node6 = LeafNode(6, -8)
@@ -148,7 +148,7 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
          -2(3) -3(4)
   */
 
-  "Total weight" should "be 5 after second cut(positive removal)" in {
+  "(test7) Total weight" should "be 5 after second cut(positive removal)" in {
 
     val node4 = LeafNode(4, -3)
     val node3 = LeafNode(3, -2)
@@ -164,13 +164,37 @@ class CheckAlgorithmFlaw extends FlatSpec with Matchers {
             -5(1)
   */
 
-  "Total weight" should "be -5 if 0 maxCuts specified" in {
+  "(test8) Total weight" should "be -5 if 0 maxCuts specified" in {
 
     val node = LeafNode(1, -5)
 
     val rs = new CutTree(node).sortCut(0)
 
     rs.newWeight should be(-5)
+  }
+
+
+  /*
+              1(1)
+              /       \
+            1(2)       1(3)
+           /   \       /     \
+       -5(5)  -6(4)  -5(8)   -6(7)
+  */
+
+  "(test9) Total weight" should "be 1 after second cut(double positive removal)" in {
+
+    val node5 = LeafNode(5, -5)
+    val node4 = LeafNode(4, -6)
+    val node8 = LeafNode(8, -5)
+    val node7 = LeafNode(7, -6)
+    val node2 = Node(2, 1,Some(node5), Some(node4))
+    val node3 = Node(3, 1,Some(node8), Some(node7))
+    val node1 = Node(3, 1,Some(node2), Some(node3))
+
+    val rs = new CutTree(node1).sortCut(2)
+
+    rs.newWeight should be(1)
   }
 
 

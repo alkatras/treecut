@@ -26,42 +26,29 @@ class CutTree(var root: Node) {
 
   def removeSubtree(n: Node): Unit = root = root.removeDescendant(n)
 
-  //*****************************************************************************
-  //  Algorithm based on modified merge sort.
-  //  Run time properties.
-  //  For find all remove actions:
-  //  Worst case - nlog(n), example: tree where we must remove all leafs
-  //  best case - n, example: tree with all positive weighted nodes
-  //  removeDescendant: has linear time cost in the Node immutable data structure
-  //  (may be reduced to constant in mutable)
-  //  hence overall sortCut time is about n^2 in the worst case
-  //*****************************************************************************
-  def sortCut(maxCuts: Int): CutStats = {
-    type CutActions = List[(Node, Int)]
+  def cut(maxCuts: Int): CutStats = {
+    type CutActions = List[Node]
+    type Subtree = (Option[Node], Int, CutActions)
 
-    def merge(left: CutActions, right: CutActions): CutActions = (left, right) match {
-      case (Nil, _) => right
-      case (_, Nil) => left
-      case ((nl, lw) :: ls, (nr, rw) :: rs) =>
-        if (lw < rw) (nl, lw) :: merge(ls, right)
-        else (nr, rw) :: merge(left, rs)
+    val empty: Subtree = (None, 0, Nil)
+    val initialWeight = root.fullWeight
+    val subtrees = root.fold2(List(empty)) {
+      case (lst, rst, n) =>
+        val subtrees: List[Subtree] = for {(lnd, lcw, lca) <- lst
+                                           (rnd, rcw, rca) <- rst
+                                           newWeight = lcw + rcw + n.weight
+        } yield (Some(n.copy(left = lnd, right = rnd)), newWeight, lca ++ rca)
+        (None, 0, List(n)) :: subtrees
+    }
+    val (_, newWeight, actions) = subtrees.view.filter {
+      case ((on, _, acs)) => !on.isEmpty && acs.length <= maxCuts
+    }.maxBy {
+      case ((_, w, _)) => w
     }
 
-    val empty = (Nil, 0)
-    val (actions, initialWeight) = if (maxCuts == 0) empty
-    else root.fold2[(CutActions, Int)](empty) {
-      case ((lca, lw), (rca, rw), n) =>
-        val subtreeWeight = n.weight + lw + rw
-        val childActions = merge(lca, rca) take maxCuts
-        val childActionsWeight = childActions.foldLeft(0) { case (acc, (_, w)) => acc + w}
-        if (subtreeWeight < childActionsWeight && n.id != root.id)
-          (List((n, subtreeWeight)), subtreeWeight)
-        else (childActions, subtreeWeight)
-    }
-
-    for ((n, _) <- actions) {
+    for (n <- actions) {
       removeSubtree(n)
     }
-    CutStats(initialWeight, root.fullWeight, actions.length)
+    CutStats(initialWeight, newWeight, actions.length)
   }
 }
